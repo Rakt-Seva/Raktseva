@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "26916365283",
+    "project_id": "rakt-seva-6746b",
+    "storage_bucket": "rakt-seva-6746b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:26916365283:android:8034b2c46d3e6e5bd136d6",
+        "android_client_info": {
+          "package_name": "com.example.yt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6lN3F1hzzXNiVSbczu_BLOBOGbPjvN6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,33 @@
+name: yt
+description: A sample command-line application.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.2
+  shared_preferences: ^2.5.2
+  shared_preferences_android: ^2.4.7
+  google_maps_flutter: ^2.5.0 # Use the latest compatible version
+  google_maps_webservice: ^0.0.7 # Correct version for Places API usage
+  geolocator: ^10.1.0
+  http: ^0.13.6
+  carousel_slider: ^5.0.0
+  firebase_core: ^2.32.0
+  cloud_firestore: ^4.17.5
+  # path: ^1.8.0
+
+dev_dependencies:
+#  lints: ^5.1.1
+  test: ^1.24.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/Logo.png
+    - assets/image1_1.png
+    - assets/person.png
