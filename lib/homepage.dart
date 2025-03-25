@@ -155,6 +155,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Text('🩸 Name:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 Text('Amir Hamza', style: TextStyle(fontSize: 18)),
+                Text('Blood Group : A+', style: TextStyle(fontSize: 18)),
                 SizedBox(height: 5),
                 Text('🏥 Location:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 Text('Hertford British Hospital', style: TextStyle(fontSize: 16)),
