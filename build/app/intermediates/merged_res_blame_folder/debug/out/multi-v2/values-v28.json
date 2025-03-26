@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.yt.app-mergeDebugResources-47:/values-v28/values-v28.xml",
+            "outputFile": "com.example.yt.app-mergeDebugResources-52:/values-v28/values-v28.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Bhushan\\.gradle\\caches\\transforms-3\\939c0c951a0515a21fa1e67299d047ae\\transformed\\appcompat-1.1.0\\res\\values-v28\\values-v28.xml",
+                    "source": "/Users/shivamborse/.gradle/caches/transforms-3/4f7d8442ad8ee53146a679543c07ca86/transformed/appcompat-1.1.0/res/values-v28/values-v28.xml",
                     "from": {
                         "startLines": "2,3,4,8",
                         "startColumns": "4,4,4,4",
