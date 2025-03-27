@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yt/gemini_chat_screen.dart';
+import 'package:yt/widgets/webview_widget.dart';
 import 'widgets/blooddonationslide.dart'; // ✅ Ensure this is correctly imported
 import 'donation_request_page.dart';
 import 'profilescreen.dart';
@@ -127,7 +128,7 @@ class HomeScreen extends StatelessWidget {
         _buildFeatureCard(Icons.search, "Find Donors", context, FindDonorsScreen()),
         _buildFeatureCard(Icons.campaign, "Campaign", context, null),
         _buildFeatureCard(Icons.local_hospital, "Order Blood", context, CreateRequestPage()),
-        _buildFeatureCard(Icons.medical_services, "Assistant", context, GeminiChatScreen()),
+        _buildFeatureCard(Icons.medical_services, "Assistant", context, WebViewXPage()),
         _buildFeatureCard(Icons.volunteer_activism, "Donate", context, CampaignPage()),
       ],
     );

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yt/homepage.dart';
+import 'role_selection_bottom_sheet.dart';
+
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -7,11 +11,38 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  void _showRoleSelectionBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return WillPopScope(
+            onWillPop: ()async{
+              return false;
+            },
+            child: RoleSelectionBottomSheet());
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     // Navigate to the first page after a delay
-    Timer(const Duration(seconds: 5), () {
+    Timer(const Duration(seconds: 5), () async{
+      SharedPreferences prefs =await SharedPreferences.getInstance();
+      String? userid = await prefs.getString('currentUser');
+      print("dfsd$userid");
+      if(userid!=null){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()), // Navigate to homepage
+        );
+        return;
+      }
       Navigator.pushReplacementNamed(context, '/firstpage');
     });
   }

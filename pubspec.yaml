@@ -20,17 +20,15 @@ dependencies:
   firebase_core: ^2.32.0
   cloud_firestore: ^4.17.5
   firebase_auth: ^4.17.5
+  firebase_messaging: ^14.9.4
+  webviewx: ^0.2.2
   # path: ^1.8.0
 
 dev_dependencies:
-#  lints: ^5.1.1
+  #  lints: ^5.1.1
   test: ^1.24.0
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/Logo.png
-    - assets/image1_1.png
-    - assets/person.png
-    - assets/st_ct.json
-
+    - assets/

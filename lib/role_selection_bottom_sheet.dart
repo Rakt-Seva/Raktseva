@@ -46,6 +46,7 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
             onPressed: selectedRole == null
                 ? null
                 : () {
+              Navigator.of(context).pop();
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => HomePage()), // Navigate to homepage

@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:yt/homepage.dart';
 import 'passwordreset.dart';
 import 'registration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'role_selection_bottom_sheet.dart';
 
 class LoginPage extends StatefulWidget {
@@ -85,16 +87,21 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   });
                   var data = await FirebaseFirestore.instance.collection("users").where("email_id", isEqualTo: _email.text).where("password", isEqualTo: _pass.text).get();
-                  Navigator.of(key.currentContext??context).pop();
                   print(data.docs.length);
                   if(data.docs.length==0){
+                    Navigator.of(key.currentContext??context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("invalid email or password")));
                   }else{
                     print("login successful");
-
-                  _showRoleSelectionBottomSheet(context);
+                    SharedPreferences prefs =await SharedPreferences.getInstance();
+                    await prefs.setString('currentUser', data.docs.first.data()["user_id"]);
+                    Navigator.of(key.currentContext??context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()), // Navigate to homepage
+                    );
                   }
-    },
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   padding: EdgeInsets.symmetric(vertical: 15),

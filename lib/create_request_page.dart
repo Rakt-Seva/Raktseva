@@ -30,7 +30,8 @@ class _CreateRequestPageState extends State<CreateRequestPage> {
 
   // Load State and City Data from JSON
   Future<void> loadStateCityData() async {
-    String data = await rootBundle.loadString('assets/st_ct.json.json');
+    String data = await rootBundle.loadString('assets/st_ct.json');
+    print(data);
     final jsonResult = json.decode(data);
     setState(() {
       stateCityData = jsonResult;

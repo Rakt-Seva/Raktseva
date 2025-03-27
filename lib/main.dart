@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:yt/campaignPage.dart';
 import 'package:yt/widgets/blooddonationslide.dart';
@@ -25,9 +26,26 @@ void main() async{
   // FirebaseFirestore.instance.settings = const Settings(
   //   persistenceEnabled: true,
   // );
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+  print("ggtggt${await FirebaseMessaging.instance.getToken()}");
+  FirebaseMessaging.onBackgroundMessage((message)async{
+    print("${message.data}");
+  });
+  FirebaseMessaging.onMessageOpenedApp.listen((message){
+    print("${message.data}");
+  });
+  FirebaseMessaging.onMessage.listen((message){
+    print("${message.data}");
+  });
+
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     initialRoute: '/splash',
+    title: 'Rakt Seva',
     routes: {
       '/splash': (context) => SplashScreen(),
       '/firstpage': (context) => FirstPage(),
