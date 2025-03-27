@@ -125,10 +125,10 @@ class HomeScreen extends StatelessWidget {
       crossAxisSpacing: 20,
       children: [
         _buildFeatureCard(Icons.search, "Find Donors", context, FindDonorsScreen()),
-        _buildFeatureCard(Icons.volunteer_activism, "Donate", context, null),
+        _buildFeatureCard(Icons.campaign, "Campaign", context, null),
         _buildFeatureCard(Icons.local_hospital, "Order Blood", context, CreateRequestPage()),
         _buildFeatureCard(Icons.medical_services, "Assistant", context, GeminiChatScreen()),
-        _buildFeatureCard(Icons.campaign, "Campaigns", context, CampaignPage()),
+        _buildFeatureCard(Icons.volunteer_activism, "Donate", context, CampaignPage()),
       ],
     );
   }
