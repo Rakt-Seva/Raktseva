@@ -11,7 +11,7 @@ class _CampaignPageState extends State<CampaignPage> {
   String? selectedState = 'All';
   String? selectedCity = 'All';
 
-  List<Map<String, dynamic>> statesAndCities = [];
+  Map<String, dynamic> statesAndCities = {};
   List<String> states = ['All'];
   List<String> cities = ['All'];
 
@@ -30,19 +30,20 @@ class _CampaignPageState extends State<CampaignPage> {
   }
 
   Future<void> _loadLocations() async {
-    try {
+    // try {
       final String response = await rootBundle.loadString('assets/st_ct.json');
-      final List<dynamic> data = json.decode(response);
-
-      List<String> fetchedStates = data.map<String>((item) => item['state'] as String).toList();
+      final Map<String,dynamic> data = json.decode(response);
+      print(data);
+      // List<String> fetchedStates = data.va.map<String>((item) => item['state'] as String).toList();
 
       setState(() {
-        statesAndCities = List<Map<String, dynamic>>.from(data);
-        states.addAll(fetchedStates);
+        statesAndCities = data;
+        states += data.keys.toList();
       });
-    } catch (e) {
-      print('Error loading locations: $e');
-    }
+
+    // } catch (e) {
+    //   print('Error loading locations: $e');
+    // }
   }
 
   void _updateCities(String state) {
@@ -52,13 +53,12 @@ class _CampaignPageState extends State<CampaignPage> {
         selectedCity = 'All';
       });
     } else {
-      var selectedStateData = statesAndCities.firstWhere(
-            (item) => item['state'] == state,
-        orElse: () => {},
-      );
+      var selectedStateData = statesAndCities.entries.map((e)=>{e.key:e.value}).where(
+            (item) => item.keys.first == state,
+      ).firstOrNull??{};
       if (selectedStateData.isNotEmpty) {
         setState(() {
-          cities = ['All', ...List<String>.from(selectedStateData['cities'])];
+          cities = ['All', ...List<String>.from(selectedStateData.values.firstOrNull??[])];
           selectedCity = 'All';
         });
       } else {
@@ -183,7 +183,10 @@ class _CampaignPageState extends State<CampaignPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
-            onPressed: () => _showFilterDialog(context),
+            onPressed: () {
+              print(states);
+              _showFilterDialog(context);
+            },
           ),
         ],
       ),
