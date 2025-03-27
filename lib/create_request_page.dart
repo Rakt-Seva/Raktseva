@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart' show rootBundle;
 
 class CreateRequestPage extends StatefulWidget {
   @override
@@ -7,13 +8,50 @@ class CreateRequestPage extends StatefulWidget {
 }
 
 class _CreateRequestPageState extends State<CreateRequestPage> {
-  final TextEditingController cityController = TextEditingController();
-  final TextEditingController hospitalController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
 
-  String? selectedBloodType; // Stores selected blood type
+  String? selectedState;
+  String? selectedCity;
+  String? selectedBloodType;
+  String? selectedTime;
+
+  List<String> states = [];
+  List<String> cities = [];
   final List<String> bloodTypes = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+  final List<String> timeOptions = ["1 Hour", "2 Hours", "6 Hours", "12 Hours", "1 Day"];
+  Map<String, dynamic> stateCityData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    loadStateCityData(); // Load JSON when the page initializes
+  }
+
+  // Load State and City Data from JSON
+  Future<void> loadStateCityData() async {
+    String data = await rootBundle.loadString('assets/st_ct.json.json');
+    final jsonResult = json.decode(data);
+    setState(() {
+      stateCityData = jsonResult;
+      states = stateCityData.keys.toList();
+    });
+  }
+
+  // Update City List when State is Selected
+  void updateCities(String? state) {
+    if (state != null && stateCityData.containsKey(state)) {
+      setState(() {
+        cities = List<String>.from(stateCityData[state]);
+        selectedCity = null; // Reset city when state changes
+      });
+    } else {
+      setState(() {
+        cities = [];
+        selectedCity = null;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,23 +72,45 @@ class _CreateRequestPageState extends State<CreateRequestPage> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            // City Input
-            _buildInputField(Icons.location_on, "City", cityController),
+            // State Dropdown
+            _buildDropdown("Select State", selectedState, states, Icons.map, (value) {
+              setState(() {
+                selectedState = value;
+                updateCities(value); // Load cities when state changes
+              });
+            }),
 
             SizedBox(height: 10),
 
-            // Hospital Input
-            _buildInputField(Icons.local_hospital, "Hospital", hospitalController),
+            // City Dropdown
+            _buildDropdown("Select City", selectedCity, cities, Icons.location_city, (value) {
+              setState(() {
+                selectedCity = value;
+              });
+            }),
 
             SizedBox(height: 10),
 
             // Blood Type Dropdown
-            _buildDropdown(),
+            _buildDropdown("Select Blood Type", selectedBloodType, bloodTypes, Icons.bloodtype, (value) {
+              setState(() {
+                selectedBloodType = value;
+              });
+            }),
 
             SizedBox(height: 10),
 
             // Mobile Input
             _buildInputField(Icons.phone, "Mobile", mobileController, keyboardType: TextInputType.phone),
+
+            SizedBox(height: 10),
+
+            // Time Needed Dropdown
+            _buildDropdown("Time Required", selectedTime, timeOptions, Icons.access_time, (value) {
+              setState(() {
+                selectedTime = value;
+              });
+            }),
 
             SizedBox(height: 10),
 
@@ -79,8 +139,8 @@ class _CreateRequestPageState extends State<CreateRequestPage> {
     );
   }
 
-  // Blood Type Dropdown Widget
-  Widget _buildDropdown() {
+  // Dropdown Widget
+  Widget _buildDropdown(String hint, String? selectedValue, List<String> items, IconData icon, Function(String?) onChanged) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
@@ -90,26 +150,22 @@ class _CreateRequestPageState extends State<CreateRequestPage> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: selectedBloodType,
+          value: selectedValue,
           hint: Row(
             children: [
-              Icon(Icons.bloodtype, color: Colors.red),
+              Icon(icon, color: Colors.red),
               SizedBox(width: 10),
-              Text("Select Blood Type"),
+              Text(hint),
             ],
           ),
           isExpanded: true,
-          items: bloodTypes.map((type) {
+          items: items.map((type) {
             return DropdownMenuItem(
               value: type,
               child: Text(type),
             );
           }).toList(),
-          onChanged: (value) {
-            setState(() {
-              selectedBloodType = value;
-            });
-          },
+          onChanged: onChanged,
         ),
       ),
     );

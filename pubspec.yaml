@@ -32,3 +32,5 @@ flutter:
     - assets/Logo.png
     - assets/image1_1.png
     - assets/person.png
+    - assets/st_ct.json
+

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:yt/gemini_chat_screen.dart';
 import 'widgets/blooddonationslide.dart'; // ✅ Ensure this is correctly imported
-//import 'search_filter_page.dart';
 import 'donation_request_page.dart';
 import 'profilescreen.dart';
 import 'finddonor.dart';
 import 'create_request_page.dart';
 import 'campaignPage.dart';
+import 'request_detail_page.dart'; // ✅ New import for details
 
 class HomePage extends StatefulWidget {
   final int initialIndex;
@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     HomeScreen(),
-    //SearchFilterPage(),
     DonationRequestPage(),
     ProfileScreen(),
   ];
@@ -65,7 +64,6 @@ class _HomePageState extends State<HomePage> {
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          //BottomNavigationBarItem(icon: Icon(Icons.search), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.stacked_line_chart), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
         ],
@@ -81,6 +79,24 @@ class HomeScreen extends StatelessWidget {
 
   HomeScreen({this.onTabChange});
 
+  // Sample data for requests
+  final List<Map<String, dynamic>> requestList = [
+    {
+      'name': 'Amir Hamza',
+      'bloodGroup': 'A+',
+      'timePosted': '5 Min Ago',
+      'latitude': 28.6139,
+      'longitude': 77.2090,
+    },
+    {
+      'name': 'John Doe',
+      'bloodGroup': 'B-',
+      'timePosted': '10 Min Ago',
+      'latitude': 28.7041,
+      'longitude': 77.1025,
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -90,7 +106,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
-            BloodDonationSlides(), // ✅ FIXED: Corrected to `BloodDonationSlides()`
+            BloodDonationSlides(), // ✅ Corrected to `BloodDonationSlides()`
             SizedBox(height: 20),
             _buildFeatureGrid(context),
             SizedBox(height: 20),
@@ -112,7 +128,7 @@ class HomeScreen extends StatelessWidget {
         _buildFeatureCard(Icons.volunteer_activism, "Donate", context, null),
         _buildFeatureCard(Icons.local_hospital, "Order Blood", context, CreateRequestPage()),
         _buildFeatureCard(Icons.medical_services, "Assistant", context, GeminiChatScreen()),
-        _buildFeatureCard(Icons.campaign, "Campaigns", context,CampaignPage()),
+        _buildFeatureCard(Icons.campaign, "Campaigns", context, CampaignPage()),
       ],
     );
   }
@@ -141,33 +157,48 @@ class HomeScreen extends StatelessWidget {
       children: [
         Text('🆘 Urgent Blood Requests', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)),
         SizedBox(height: 10),
-        GestureDetector(
-          onTap: () {
-            if (onTabChange != null) {
-              onTabChange!(2);
-            }
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: requestList.length,
+          itemBuilder: (context, index) {
+            final request = requestList[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RequestDetailPage(
+                      name: request['name'],
+                      bloodGroup: request['bloodGroup'],
+                      timePosted: request['timePosted'],
+                      latitude: request['latitude'],
+                      longitude: request['longitude'],
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                margin: EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.grey.shade100,
+                ),
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('🩸 Name: ${request['name']}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('Blood Group : ${request['bloodGroup']}', style: TextStyle(fontSize: 18)),
+                    SizedBox(height: 5),
+                    Text('⏳ Posted: ${request['timePosted']}', style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ),
+            );
           },
-          child: Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.grey.shade100),
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('🩸 Name:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('Amir Hamza', style: TextStyle(fontSize: 18)),
-                Text('Blood Group : A+', style: TextStyle(fontSize: 18)),
-                SizedBox(height: 5),
-                Text('🏥 Location:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('Hertford British Hospital', style: TextStyle(fontSize: 16)),
-                SizedBox(height: 5),
-                Text('⏳ Posted:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('5 Min Ago', style: TextStyle(color: Colors.grey)),
-              ],
-            ),
-          ),
         ),
       ],
     );
   }
 }
-
