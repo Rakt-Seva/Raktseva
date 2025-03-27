@@ -3,12 +3,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart'; // Correct import for Google Places API
 
-class CampaignPage extends StatefulWidget {
+class DonatePage extends StatefulWidget {
   @override
-  _CampaignPageState createState() => _CampaignPageState();
+  _DonatePageState createState() => _DonatePageState();
 }
 
-class _CampaignPageState extends State<CampaignPage> {
+class _DonatePageState extends State<DonatePage> {
   GoogleMapController? mapController;
   Position? _currentPosition;
   Set<Marker> _markers = {};
@@ -126,11 +126,11 @@ class _CampaignPageState extends State<CampaignPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Nearby Blood Donation Campaigns"),
+        title: const Text("Nearby Blood Donation Campaigns"),
         backgroundColor: Colors.redAccent,
       ),
       body: _currentPosition == null
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : GoogleMap(
         initialCameraPosition: CameraPosition(
           target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),

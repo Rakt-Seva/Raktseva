@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:yt/campaignPage.dart';
+import 'package:yt/campaign_page.dart';
+import 'package:yt/donatepage.dart';
 import 'package:yt/widgets/blooddonationslide.dart';
 import 'package:yt/create_request_page.dart';
 import 'package:yt/donation_request_page.dart';
@@ -63,7 +64,8 @@ void main() async{
       '/gemini_chat_screen' : (context) => GeminiChatScreen(),
       '/carousel_widget_dart': (context) => CarouselSliderWidget(),
       '/blooddonationslide': (context) => BloodDonationSlides(),
-      '/campaignPage': (context) => CampaignPage(),
+      '/donatePage': (context) => DonatePage(),
+      '/campaign_page': (context) => CampaignPage(),
     },
   ));
 }

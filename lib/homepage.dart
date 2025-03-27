@@ -6,8 +6,9 @@ import 'donation_request_page.dart';
 import 'profilescreen.dart';
 import 'finddonor.dart';
 import 'create_request_page.dart';
-import 'campaignPage.dart';
+import 'donatepage.dart';
 import 'request_detail_page.dart'; // ✅ New import for details
+import 'campaign_page.dart'; // ✅ Import your Campaign Page
 
 class HomePage extends StatefulWidget {
   final int initialIndex;
@@ -41,8 +42,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        leading: Icon(Icons.grid_view, color: Colors.red),
-        actions: [
+        leading: const Icon(Icons.grid_view, color: Colors.red),
+        actions: const [
           Icon(Icons.notifications_none, color: Colors.black),
           SizedBox(width: 10),
         ],
@@ -63,7 +64,7 @@ class _HomePageState extends State<HomePage> {
             widget.onTabChange!(index);
           }
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.stacked_line_chart), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
@@ -106,11 +107,11 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             BloodDonationSlides(), // ✅ Corrected to `BloodDonationSlides()`
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildFeatureGrid(context),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildDonationRequestSection(context),
           ],
         ),
@@ -126,10 +127,10 @@ class HomeScreen extends StatelessWidget {
       crossAxisSpacing: 20,
       children: [
         _buildFeatureCard(Icons.search, "Find Donors", context, FindDonorsScreen()),
-        _buildFeatureCard(Icons.campaign, "Campaign", context, null),
+        _buildFeatureCard(Icons.campaign, "Campaign", context, CampaignPage()), // ✅ Updated with CampaignPage
         _buildFeatureCard(Icons.local_hospital, "Order Blood", context, CreateRequestPage()),
         _buildFeatureCard(Icons.medical_services, "Assistant", context, WebViewXPage()),
-        _buildFeatureCard(Icons.volunteer_activism, "Donate", context, CampaignPage()),
+        _buildFeatureCard(Icons.volunteer_activism, "Donate", context, DonatePage()),
       ],
     );
   }
@@ -144,9 +145,16 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(backgroundColor: Colors.red.shade100, radius: 30, child: Icon(icon, color: Colors.red, size: 30)),
-          SizedBox(height: 10),
-          Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          CircleAvatar(
+            backgroundColor: Colors.red.shade100,
+            radius: 30,
+            child: Icon(icon, color: Colors.red, size: 30),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );
@@ -156,11 +164,14 @@ class HomeScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('🆘 Urgent Blood Requests', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)),
-        SizedBox(height: 10),
+        const Text(
+          '🆘 Urgent Blood Requests',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
+        ),
+        const SizedBox(height: 10),
         ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: requestList.length,
           itemBuilder: (context, index) {
             final request = requestList[index];
@@ -180,19 +191,28 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               child: Container(
-                margin: EdgeInsets.only(bottom: 10),
+                margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: Colors.grey.shade100,
                 ),
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('🩸 Name: ${request['name']}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    Text('Blood Group : ${request['bloodGroup']}', style: TextStyle(fontSize: 18)),
-                    SizedBox(height: 5),
-                    Text('⏳ Posted: ${request['timePosted']}', style: TextStyle(color: Colors.grey)),
+                    Text(
+                      '🩸 Name: ${request['name']}',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'Blood Group: ${request['bloodGroup']}',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      '⏳ Posted: ${request['timePosted']}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                   ],
                 ),
               ),
