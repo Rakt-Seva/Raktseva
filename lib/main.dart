@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:yt/campaign_page.dart';
 import 'package:yt/donatepage.dart';
+import 'package:yt/edit_profile_page.dart';
 import 'package:yt/widgets/blooddonationslide.dart';
 import 'package:yt/create_request_page.dart';
 import 'package:yt/donation_request_page.dart';
@@ -66,6 +67,7 @@ void main() async{
       '/blooddonationslide': (context) => BloodDonationSlides(),
       '/donatePage': (context) => DonatePage(),
       '/campaign_page': (context) => CampaignPage(),
+      '/edit_profile_page': (context) => EditProfilePage(),
     },
   ));
 }

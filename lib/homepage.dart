@@ -1,14 +1,14 @@
+// 👇 Make sure all imports are correct and available
 import 'package:flutter/material.dart';
-import 'package:yt/gemini_chat_screen.dart';
 import 'package:yt/widgets/webview_widget.dart';
-import 'widgets/blooddonationslide.dart'; // ✅ Ensure this is correctly imported
+import 'widgets/blooddonationslide.dart';
 import 'donation_request_page.dart';
 import 'profilescreen.dart';
 import 'finddonor.dart';
 import 'create_request_page.dart';
 import 'donatepage.dart';
-import 'request_detail_page.dart'; // ✅ New import for details
-import 'campaign_page.dart'; // ✅ Import your Campaign Page
+import 'request_detail_page.dart';
+import 'campaign_page.dart';
 
 class HomePage extends StatefulWidget {
   final int initialIndex;
@@ -81,12 +81,12 @@ class HomeScreen extends StatelessWidget {
 
   HomeScreen({this.onTabChange});
 
-  // Sample data for requests
   final List<Map<String, dynamic>> requestList = [
     {
       'name': 'Amir Hamza',
       'bloodGroup': 'A+',
       'timePosted': '5 Min Ago',
+      'location': 'Connaught Place, Delhi',
       'latitude': 28.6139,
       'longitude': 77.2090,
     },
@@ -94,6 +94,7 @@ class HomeScreen extends StatelessWidget {
       'name': 'John Doe',
       'bloodGroup': 'B-',
       'timePosted': '10 Min Ago',
+      'location': 'Chandni Chowk, Delhi',
       'latitude': 28.7041,
       'longitude': 77.1025,
     },
@@ -108,7 +109,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            BloodDonationSlides(), // ✅ Corrected to `BloodDonationSlides()`
+            BloodDonationSlides(),
             const SizedBox(height: 20),
             _buildFeatureGrid(context),
             const SizedBox(height: 20),
@@ -127,7 +128,7 @@ class HomeScreen extends StatelessWidget {
       crossAxisSpacing: 20,
       children: [
         _buildFeatureCard(Icons.search, "Find Donors", context, FindDonorsScreen()),
-        _buildFeatureCard(Icons.campaign, "Campaign", context, CampaignPage()), // ✅ Updated with CampaignPage
+        _buildFeatureCard(Icons.campaign, "Campaign", context, CampaignPage()),
         _buildFeatureCard(Icons.local_hospital, "Order Blood", context, CreateRequestPage()),
         _buildFeatureCard(Icons.medical_services, "Assistant", context, WebViewXPage()),
         _buildFeatureCard(Icons.volunteer_activism, "Donate", context, DonatePage()),
@@ -184,6 +185,7 @@ class HomeScreen extends StatelessWidget {
                       name: request['name'],
                       bloodGroup: request['bloodGroup'],
                       timePosted: request['timePosted'],
+                      location: request['location'],
                       latitude: request['latitude'],
                       longitude: request['longitude'],
                     ),
@@ -207,6 +209,10 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       'Blood Group: ${request['bloodGroup']}',
                       style: const TextStyle(fontSize: 18),
+                    ),
+                    Text(
+                      'Location: ${request['location']}',
+                      style: const TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 5),
                     Text(

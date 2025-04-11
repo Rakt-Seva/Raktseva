@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'eligibilitycheck.dart'; // Make sure this is correctly imported
-import 'donationhistory.dart'; // Import donation history page
-import 'rewards_page.dart'; // Import rewards page
+import 'eligibilitycheck.dart';
+import 'donationhistory.dart';
+import 'rewards_page.dart';
+import 'login.dart';
+import 'homepage.dart';
+import 'edit_profile_page.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -9,40 +12,35 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String eligibilityStatus = "No"; // Default status
-  int rewardPoints = 500; // Initial reward points
-  List<Map<String, String>> donationHistory = []; // Track donation history
+  String eligibilityStatus = "No";
+  int rewardPoints = 500;
+  List<Map<String, String>> donationHistory = [];
 
   void _navigateToEligibilityCheck() async {
-    // Navigate to the EligibilityCheckPage and await the result
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EligibilityCheckPage()),
     );
 
-    // Check if the result is not null and is of type bool
     if (result != null && result is bool) {
       setState(() {
-        eligibilityStatus = result ? "Yes" : "No"; // Update eligibility status
+        eligibilityStatus = result ? "Yes" : "No";
       });
 
-      // If eligible and user donates, add 100 points and update history
       if (result) {
         _addDonation("25 March 2025", "Donated A+ blood at XYZ Hospital");
       }
     }
   }
 
-  // Method to add donation and update points
   void _addDonation(String date, String details) {
     setState(() {
       donationHistory.add({'date': date, 'details': details});
-      rewardPoints += 100; // Add 100 points for each donation
+      rewardPoints += 100;
     });
     _showMessage("Donation recorded! You earned 100 points 🎉");
   }
 
-  // Method to add reward points directly
   void _addRewardPoints(int points) {
     setState(() {
       rewardPoints += points;
@@ -50,7 +48,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _showMessage("You earned $points points! 🎉");
   }
 
-  // Method to redeem points
   void _redeemPoints() {
     if (rewardPoints >= 200) {
       setState(() {
@@ -62,17 +59,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Show a confirmation message
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: 2),
-      ),
+      SnackBar(content: Text(message), duration: Duration(seconds: 2)),
     );
   }
 
-  // Navigate to donation history page
   void _navigateToDonationHistory() {
     Navigator.push(
       context,
@@ -83,13 +75,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Navigate to rewards page
   void _navigateToRewardsPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => RewardsPage(),
-      ),
+      MaterialPageRoute(builder: (context) => RewardsPage()),
+    );
+  }
+
+  void _navigateToEditProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditProfilePage()),
+    );
+  }
+
+  void _signOut() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+          (Route<dynamic> route) => false,
     );
   }
 
@@ -100,10 +104,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        leading: Icon(Icons.arrow_back, color: Colors.black),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          },
+        ),
         title: Text("Profile", style: TextStyle(color: Colors.black)),
         actions: [
-          Icon(Icons.edit, color: Colors.black),
+          IconButton(
+            icon: Icon(Icons.edit, color: Colors.black),
+            onPressed: _navigateToEditProfile,
+          ),
           SizedBox(width: 10),
         ],
       ),
@@ -122,8 +137,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               Text("📍 Thane, India", style: TextStyle(color: Colors.grey)),
               SizedBox(height: 20),
-
-              // Blood Type, Donated, Requested Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -133,15 +146,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               SizedBox(height: 20),
-
-              // Profile Option for eligibility status and rewards
               _buildProfileOption(
                 title: "Eligible to donate: $eligibilityStatus",
                 icon: Icons.check_circle,
                 onTap: _navigateToEligibilityCheck,
               ),
               _buildProfileOption(
-                title: "Reward Points",
+                title: "Reward Points: $rewardPoints",
                 icon: Icons.star,
                 onTap: _navigateToRewardsPage,
               ),
@@ -152,7 +163,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               _buildProfileOption(title: "Get help", icon: Icons.help_outline),
               _buildProfileOption(
-                  title: "Sign out", icon: Icons.logout, color: Colors.red),
+                title: "Sign out",
+                icon: Icons.logout,
+                color: Colors.red,
+                onTap: _signOut,
+              ),
             ],
           ),
         ),
@@ -160,7 +175,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Method to build info card for Blood Type, Donated, Requested
   Widget _buildInfoCard(String value, String label) {
     return Column(
       children: [
@@ -172,12 +186,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Method to build profile options like eligibility check, rewards, and help
-  Widget _buildProfileOption(
-      {required String title,
-        required IconData icon,
-        VoidCallback? onTap,
-        Color color = Colors.black}) {
+  Widget _buildProfileOption({
+    required String title,
+    required IconData icon,
+    VoidCallback? onTap,
+    Color color = Colors.black,
+  }) {
     return ListTile(
       onTap: onTap,
       leading: Icon(icon, color: color),
