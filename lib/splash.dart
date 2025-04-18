@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yt/homepage.dart';
+import 'package:yt/userController.dart';
 import 'role_selection_bottom_sheet.dart';
 
 
@@ -35,8 +36,10 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 5), () async{
       SharedPreferences prefs =await SharedPreferences.getInstance();
       String? userid = await prefs.getString('currentUser');
+
       print("dfsd$userid");
       if(userid!=null){
+        UserController.instance.initAndListenToUser();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()), // Navigate to homepage

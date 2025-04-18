@@ -15,6 +15,24 @@ class _DonatePageState extends State<DonatePage> {
   final String _apiKey = "AIzaSyBTUjMdjy1N-Naqhcent6wqLrWHeTu4lYg"; // 🔴 Replace with your API Key
   late GoogleMapsPlaces _places;
 
+  // Custom map style to hide default POIs (restaurants, cafes, etc.)
+  String mapStyle = '''
+  [
+    {
+      "featureType": "poi",
+      "stylers": [
+        { "visibility": "off" }
+      ]
+    },
+    {
+      "featureType": "transit",
+      "stylers": [
+        { "visibility": "off" }
+      ]
+    }
+  ]
+  ''';
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +57,7 @@ class _DonatePageState extends State<DonatePage> {
       setState(() {
         _currentPosition = position;
         _updateMap(position);
-        _fetchNearbyHospitalsAndBloodBanks(position); // Update to fetch both
+        _fetchNearbyHealthRelatedPlaces(position); // Update to fetch health-related places
       });
     });
   }
@@ -59,15 +77,15 @@ class _DonatePageState extends State<DonatePage> {
           markerId: MarkerId("current_location"),
           position: LatLng(position.latitude, position.longitude),
           infoWindow: InfoWindow(title: "Your Location"),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // Blue for "Your Location"
         ),
       );
     });
   }
 
-  // Fetch nearby hospitals and blood banks using Google Places API
-  void _fetchNearbyHospitalsAndBloodBanks(Position position) async {
-    final location = Location(lat: position.latitude, lng: position.longitude); // Correct usage with named parameters
+  // Fetch nearby hospitals, clinics, and blood banks using Google Places API
+  void _fetchNearbyHealthRelatedPlaces(Position position) async {
+    final location = Location(lat: position.latitude, lng: position.longitude);
 
     try {
       // Search for nearby hospitals
@@ -77,7 +95,14 @@ class _DonatePageState extends State<DonatePage> {
         type: "hospital", // Look for hospitals
       );
 
-      // Search for nearby blood banks (add "blood bank" as a keyword)
+      // Search for nearby clinics
+      PlacesSearchResponse clinicResponse = await _places.searchNearbyWithRadius(
+        location,
+        5000, // Search radius (in meters)
+        type: "clinic", // Look for clinics
+      );
+
+      // Search for nearby blood banks
       PlacesSearchResponse bloodBankResponse = await _places.searchNearbyWithRadius(
         location,
         5000, // Search radius (in meters)
@@ -87,7 +112,7 @@ class _DonatePageState extends State<DonatePage> {
       setState(() {
         _markers.removeWhere((m) => m.markerId.value != "current_location"); // Keep only user marker
 
-        // Add hospital markers
+        // Add hospital markers with red color
         for (var place in hospitalResponse.results) {
           _markers.add(
             Marker(
@@ -102,7 +127,22 @@ class _DonatePageState extends State<DonatePage> {
           );
         }
 
-        // Add blood bank markers
+        // Add clinic markers with violet color
+        for (var place in clinicResponse.results) {
+          _markers.add(
+            Marker(
+              markerId: MarkerId("clinic_${place.name}"),
+              position: LatLng(place.geometry!.location.lat, place.geometry!.location.lng),
+              infoWindow: InfoWindow(
+                title: place.name,
+                snippet: place.vicinity,
+              ),
+              icon: BitmapDescriptor.defaultMarkerWithHue(280), // Violet for clinics
+            ),
+          );
+        }
+
+        // Add blood bank markers with green color
         for (var place in bloodBankResponse.results) {
           _markers.add(
             Marker(
@@ -137,7 +177,10 @@ class _DonatePageState extends State<DonatePage> {
           zoom: 14.0,
         ),
         markers: _markers,
-        onMapCreated: (controller) => mapController = controller,
+        onMapCreated: (controller) {
+          mapController = controller;
+          controller.setMapStyle(mapStyle); // Set custom style to hide non-health POIs
+        },
         myLocationEnabled: true,
         myLocationButtonEnabled: true,
       ),

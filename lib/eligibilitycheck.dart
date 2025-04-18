@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
+import 'package:yt/userController.dart';
 import 'profilescreen.dart';
 
 class EligibilityCheckPage extends StatefulWidget {
@@ -36,7 +37,7 @@ class _EligibilityCheckPageState extends State<EligibilityCheckPage> {
     await prefs.setBool("illness", illness ?? false);
   }
 
-  void checkEligibility() {
+  void checkEligibility() async{
     if (alcohol == null || tattoo == null || illness == null) {
       _showResultDialog("Incomplete", "Please answer all questions before proceeding.", false);
       return;
@@ -44,6 +45,7 @@ class _EligibilityCheckPageState extends State<EligibilityCheckPage> {
 
     bool isEligible = !(alcohol! || tattoo! || illness!);
     _saveEligibility(); // Save responses
+    await UserController.instance.updateEligibility(isEligible);
 
     _showResultDialog(
       isEligible ? "Eligible" : "Not Eligible",

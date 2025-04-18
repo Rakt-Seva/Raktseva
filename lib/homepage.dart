@@ -1,5 +1,7 @@
 // 👇 Make sure all imports are correct and available
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:yt/userController.dart';
 import 'package:yt/widgets/webview_widget.dart';
 import 'widgets/blooddonationslide.dart';
 import 'donation_request_page.dart';
@@ -170,62 +172,92 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
         ),
         const SizedBox(height: 10),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: requestList.length,
-          itemBuilder: (context, index) {
-            final request = requestList[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RequestDetailPage(
-                      name: request['name'],
-                      bloodGroup: request['bloodGroup'],
-                      timePosted: request['timePosted'],
-                      location: request['location'],
-                      latitude: request['latitude'],
-                      longitude: request['longitude'],
+        StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+        .collection('requests')
+        .where("time_required", whereIn: ["1 Hour", "2 Hours"])
+        .orderBy('created_at', descending: true)
+        .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(child: Text("No donation requests available."));
+              }
+
+              final requestList = snapshot.data!.docs;
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: requestList.length,
+              itemBuilder: (context, index) {
+                final request = requestList[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RequestDetailPage(
+                          name: request['name'],
+                          bloodGroup: request['blood_type'],
+                          timePosted: _formatTime(request['created_at']),
+                          location: request['location'],
+                          latitude: request['latitude'],
+                          longitude: request['longitude'],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.grey.shade100,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '🩸 Name: ${request['name']}',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'Blood Group: ${request['blood_type']}',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                          'Location: ${request['city']}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          '⏳ Posted: ${_formatTime(request['created_at'])}',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ],
                     ),
                   ),
                 );
               },
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.grey.shade100,
-                ),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '🩸 Name: ${request['name']}',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'Blood Group: ${request['bloodGroup']}',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    Text(
-                      'Location: ${request['location']}',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      '⏳ Posted: ${request['timePosted']}',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
             );
-          },
+          }
         ),
       ],
     );
   }
+}
+
+String _formatTime(Timestamp? timestamp) {
+  if (timestamp == null) return "Just now";
+  final now = DateTime.now();
+  final created = timestamp.toDate();
+  final difference = now.difference(created);
+
+  if (difference.inMinutes < 1) return "Just now";
+  if (difference.inMinutes < 60) return "${difference.inMinutes} min ago";
+  if (difference.inHours < 24) return "${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago";
+  return "${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago";
 }

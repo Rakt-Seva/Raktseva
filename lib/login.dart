@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:yt/homepage.dart';
+import 'package:yt/userController.dart';
 import 'passwordreset.dart';
 import 'registration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                     print("login successful");
                     SharedPreferences prefs =await SharedPreferences.getInstance();
                     await prefs.setString('currentUser', data.docs.first.data()["user_id"]);
+                    UserController.instance.initAndListenToUser();
                     Navigator.of(key.currentContext??context).pop();
                     Navigator.pushReplacement(
                       context,

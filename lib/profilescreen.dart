@@ -1,20 +1,59 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:yt/userController.dart';
 import 'eligibilitycheck.dart';
 import 'donationhistory.dart';
 import 'rewards_page.dart';
 import 'login.dart';
 import 'homepage.dart';
 import 'edit_profile_page.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class ProfileScreen extends StatefulWidget {
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String _name = "Loading...";
+  String _address = "Loading...";
+  String _blg = "-";
   String eligibilityStatus = "No";
   int rewardPoints = 500;
-  List<Map<String, String>> donationHistory = [];
+  List<Map<String, dynamic>> donationHistory = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      SharedPreferences prefs =await SharedPreferences.getInstance();
+      String? uid = await prefs.getString('currentUser');
+      UserController.instance.initAndListenToUser();
+      print(uid);
+      if (uid == null) return;
+
+
+      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final data = doc.data();
+      print(data);
+      print("ihbpfjastmne");
+      if (data != null) {
+        setState(() {
+          _name = data['name'] ?? 'No name';
+          _address = data['address'] ?? 'No address';
+          _blg = data['blood_group'] ?? '-';
+        });
+      }
+    } catch (e) {
+      print("⚠️ Error loading user data: $e");
+      _showMessage("Failed to load user data.");
+    }
+  }
 
   void _navigateToEligibilityCheck() async {
     final result = await Navigator.push(
@@ -28,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
 
       if (result) {
-        _addDonation("25 March 2025", "Donated A+ blood at XYZ Hospital");
+        _addDonation("25 March 2025", "Donated $_blg blood at XYZ Hospital");
       }
     }
   }
@@ -69,8 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            DonationHistoryPage(donationHistory: donationHistory),
+        builder: (context) => DonationHistoryPage(donationHistory: donationHistory),
       ),
     );
   }
@@ -89,7 +127,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _signOut() {
+  void _signOut() async {
+    await FirebaseAuth.instance.signOut();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
@@ -128,28 +167,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage('assets/profile.jpg'),
+              Obx(
+              ()=> CircleAvatar(
+                  radius: 50,
+                  backgroundImage: NetworkImage(UserController.instance.userPhoto.value),
+                  // backgroundImage: AssetImage('assets/profile.jpg'),
+                ),
               ),
               SizedBox(height: 10),
-              Text("Tanvi Kathole",
+              Text(_name,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-              Text("📍 Thane, India", style: TextStyle(color: Colors.grey)),
+              Text("📍 $_address", style: TextStyle(color: Colors.grey)),
               SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildInfoCard("A+", "Blood Type"),
+                  _buildInfoCard(_blg, "Blood Type"),
                   _buildInfoCard("${donationHistory.length}", "Donated"),
                   _buildInfoCard("02", "Requested"),
                 ],
               ),
               SizedBox(height: 20),
-              _buildProfileOption(
-                title: "Eligible to donate: $eligibilityStatus",
-                icon: Icons.check_circle,
-                onTap: _navigateToEligibilityCheck,
+              Obx(
+                ()=> _buildProfileOption(
+                  title: "Eligible to donate: ${UserController.instance.eligibilityStatus.value?"Yes":"No"}",
+                  icon: Icons.check_circle,
+                  onTap: _navigateToEligibilityCheck,
+                ),
               ),
               _buildProfileOption(
                 title: "Reward Points: $rewardPoints",

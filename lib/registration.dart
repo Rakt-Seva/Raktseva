@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -126,6 +127,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 onPressed: () async{
                   // Add register logic here
                   var db  = FirebaseFirestore.instance;
+                  String? fcmToken = await FirebaseMessaging.instance.getToken();
                   Map<String, dynamic> data = {
                     "user_id":DateTime.now().millisecondsSinceEpoch.toString(),
                     "name": _name.text,
@@ -133,7 +135,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     "password": _pass.text,
                     "mobile_number":_mobno.text,
                     "blood_group":_blg.text,
-                    "address":_address.text
+                    "address":_address.text,
+                    "eligibility_status":false,
+                    "reward_points":500,
+                    "fcm_token":fcmToken,
                   };
                   print(data);
                    await db.collection("users").doc(data["user_id"]).set(data);

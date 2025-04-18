@@ -1,6 +1,9 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+
+import 'package:yt/userController.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -15,7 +18,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   File? _image;
 
   Future<void> _pickImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery, );
     if (picked != null) {
       setState(() {
         _image = File(picked.path);
@@ -23,9 +26,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  void _saveProfile() {
+  void _saveProfile() async{
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      await FirebaseStorage.instance.ref().child("${UserController.instance.userId}.jpg").putFile(_image!);
+      await UserController.instance.getImageUrl();
       Navigator.pop(context); // Save logic here if needed
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Profile updated successfully ✅")),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DonationHistoryPage extends StatelessWidget {
-  final List<Map<String, String>> donationHistory;
+  final List<Map<String, dynamic>> donationHistory;
 
   DonationHistoryPage({required this.donationHistory});
 
@@ -13,26 +13,15 @@ class DonationHistoryPage extends StatelessWidget {
         backgroundColor: Colors.red,
       ),
       body: donationHistory.isEmpty
-          ? Center(
-        child: Text(
-          "No donations yet!",
-          style: TextStyle(fontSize: 18, color: Colors.grey),
-        ),
-      )
+          ? Center(child: Text("No donation history available."))
           : ListView.builder(
         itemCount: donationHistory.length,
         itemBuilder: (context, index) {
-          final history = donationHistory[index];
+          final donation = donationHistory[index];
           return ListTile(
             leading: Icon(Icons.bloodtype, color: Colors.red),
-            title: Text(
-              history['date'] ?? '',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              history['details'] ?? '',
-              style: TextStyle(color: Colors.grey),
-            ),
+            title: Text(donation['details'] ?? "No details"),
+            subtitle: Text(donation['date'] ?? "No date"),
           );
         },
       ),

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:yt/userController.dart';
 
 class CreateRequestPage extends StatefulWidget {
   @override
@@ -52,6 +54,62 @@ class _CreateRequestPageState extends State<CreateRequestPage> {
         selectedCity = null;
       });
     }
+  }
+
+  // Send Request Data to Firebase
+  void _sendRequestToFirebase() async {
+    if (selectedState != null && selectedCity != null && selectedBloodType != null && mobileController.text.isNotEmpty && selectedTime != null) {
+      try {
+        await FirebaseFirestore.instance.collection('requests').add({
+          'state': selectedState,
+          'city': selectedCity,
+          'blood_type': selectedBloodType,
+          'mobile': mobileController.text,
+          'time_required': selectedTime,
+          'note': noteController.text,
+          'created_at': FieldValue.serverTimestamp(),
+          'name':UserController.instance.name.value,
+          'user_id':UserController.instance.userId.value,
+        });
+
+        _showConfirmationDialog();
+        _sendNotification();
+      } catch (e) {
+        print("Error sending request: $e");
+      }
+    } else {
+      print("Please fill all fields.");
+    }
+  }
+
+  // Send Notification (for admin or user depending on your use case)
+  void _sendNotification() {
+    // You can use Firebase Cloud Messaging to send push notifications.
+    // This part depends on how you want to trigger notifications and who should receive them.
+  }
+
+  // Show Confirmation Dialog
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Text("Request Submitted"),
+          content: Text("Your blood donation request has been submitted successfully."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("OK", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -122,9 +180,7 @@ class _CreateRequestPageState extends State<CreateRequestPage> {
 
             // Request Button
             ElevatedButton(
-              onPressed: () {
-                _showConfirmationDialog();
-              },
+              onPressed: _sendRequestToFirebase,  // Call the function to send data to Firebase
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
@@ -188,30 +244,6 @@ class _CreateRequestPageState extends State<CreateRequestPage> {
           borderSide: BorderSide.none,
         ),
       ),
-    );
-  }
-
-  // Show Confirmation Dialog
-  void _showConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: Text("Request Submitted"),
-          content: Text("Your blood donation request has been submitted successfully."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("OK", style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
     );
   }
 }
