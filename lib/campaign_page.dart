@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'campaign_detail_page.dart';
 
 class CampaignPage extends StatefulWidget {
   @override
@@ -16,34 +17,71 @@ class _CampaignPageState extends State<CampaignPage> {
   List<String> cities = ['All'];
 
   List<Map<String, String>> campaigns = [
-    {'name': 'Delhi Blood Donation Drive', 'location': 'New Delhi', 'date': 'March 30, 2025'},
-    {'name': 'Mumbai Blood Camp', 'location': 'Mumbai', 'date': 'April 5, 2025'},
-    {'name': 'Bangalore Awareness Program', 'location': 'Bangalore', 'date': 'April 10, 2025'},
-    {'name': 'Kolkata Blood Donation', 'location': 'Kolkata', 'date': 'April 12, 2025'},
-    {'name': 'Chennai Health Camp', 'location': 'Chennai', 'date': 'April 15, 2025'},
+    {
+      'name': 'Delhi Blood Donation Drive',
+      'location': 'New Delhi',
+      'startDate': 'March 30, 2025',
+      'endDate': 'April 1, 2025',
+      'organizer': 'Delhi Blood Bank',
+      'timePosted': '2025-03-15',
+      'latitude': '28.6139',
+      'longitude': '77.2090',
+    },
+    {
+      'name': 'Mumbai Blood Camp',
+      'location': 'Mumbai',
+      'startDate': 'April 5, 2025',
+      'endDate': 'April 7, 2025',
+      'organizer': 'Mumbai Health Organization',
+      'timePosted': '2025-03-20',
+      'latitude': '19.0760',
+      'longitude': '72.8777',
+    },
+    {
+      'name': 'Bangalore Awareness Program',
+      'location': 'Bangalore',
+      'startDate': 'April 10, 2025',
+      'endDate': 'April 11, 2025',
+      'organizer': 'Bangalore Red Cross',
+      'timePosted': '2025-03-25',
+      'latitude': '12.9716',
+      'longitude': '77.5946',
+    },
+    {
+      'name': 'Kolkata Blood Donation',
+      'location': 'Kolkata',
+      'startDate': 'April 12, 2025',
+      'endDate': 'April 13, 2025',
+      'organizer': 'Kolkata Blood Center',
+      'timePosted': '2025-03-28',
+      'latitude': '22.5726',
+      'longitude': '88.3639',
+    },
+    {
+      'name': 'Chennai Health Camp',
+      'location': 'Chennai',
+      'startDate': 'April 15, 2025',
+      'endDate': 'April 16, 2025',
+      'organizer': 'Chennai Health Organization',
+      'timePosted': '2025-03-30',
+      'latitude': '13.0827',
+      'longitude': '80.2707',
+    },
   ];
 
   @override
   void initState() {
     super.initState();
-    _loadLocations(); // Load state-city data
+    _loadLocations();
   }
 
   Future<void> _loadLocations() async {
-    // try {
-      final String response = await rootBundle.loadString('assets/st_ct.json');
-      final Map<String,dynamic> data = json.decode(response);
-      print(data);
-      // List<String> fetchedStates = data.va.map<String>((item) => item['state'] as String).toList();
-
-      setState(() {
-        statesAndCities = data;
-        states += data.keys.toList();
-      });
-
-    // } catch (e) {
-    //   print('Error loading locations: $e');
-    // }
+    final String response = await rootBundle.loadString('assets/st_ct.json');
+    final Map<String, dynamic> data = json.decode(response);
+    setState(() {
+      statesAndCities = data;
+      states += data.keys.toList();
+    });
   }
 
   void _updateCities(String state) {
@@ -53,12 +91,12 @@ class _CampaignPageState extends State<CampaignPage> {
         selectedCity = 'All';
       });
     } else {
-      var selectedStateData = statesAndCities.entries.map((e)=>{e.key:e.value}).where(
-            (item) => item.keys.first == state,
-      ).firstOrNull??{};
+      var selectedStateData = statesAndCities.entries
+          .map((e) => {e.key: e.value})
+          .firstWhere((item) => item.keys.first == state, orElse: () => {});
       if (selectedStateData.isNotEmpty) {
         setState(() {
-          cities = ['All', ...List<String>.from(selectedStateData.values.firstOrNull??[])];
+          cities = ['All', ...List<String>.from(selectedStateData.values.first)];
           selectedCity = 'All';
         });
       } else {
@@ -72,8 +110,7 @@ class _CampaignPageState extends State<CampaignPage> {
 
   List<Map<String, String>> _filterCampaigns() {
     return campaigns.where((campaign) {
-      bool stateMatch =
-          selectedState == 'All' || campaign['location'] == selectedState;
+      bool stateMatch = selectedState == 'All' || campaign['location'] == selectedState;
       bool cityMatch = selectedCity == 'All' || campaign['location'] == selectedCity;
       return stateMatch && cityMatch;
     }).toList();
@@ -92,11 +129,10 @@ class _CampaignPageState extends State<CampaignPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Filter Donors',
+                    'Filter Campaigns',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  // State Dropdown
                   DropdownButtonFormField<String>(
                     value: selectedState,
                     isExpanded: true,
@@ -118,7 +154,6 @@ class _CampaignPageState extends State<CampaignPage> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  // City Dropdown
                   DropdownButtonFormField<String>(
                     value: selectedCity,
                     isExpanded: true,
@@ -142,7 +177,6 @@ class _CampaignPageState extends State<CampaignPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Clear Button
                       TextButton(
                         onPressed: () {
                           setState(() {
@@ -153,14 +187,14 @@ class _CampaignPageState extends State<CampaignPage> {
                         },
                         child: const Text('Clear', style: TextStyle(color: Colors.red)),
                       ),
-                      // Apply Button
                       ElevatedButton(
                         onPressed: () {
                           setState(() {});
                           Navigator.pop(context);
                         },
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red), // Changed 'primary' to 'backgroundColor'
                         child: const Text('Apply'),
-                      ),
+                      )
                     ],
                   ),
                 ],
@@ -184,7 +218,6 @@ class _CampaignPageState extends State<CampaignPage> {
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () {
-              print(states);
               _showFilterDialog(context);
             },
           ),
@@ -195,17 +228,33 @@ class _CampaignPageState extends State<CampaignPage> {
           : ListView.builder(
         itemCount: filteredCampaigns.length,
         itemBuilder: (context, index) {
+          final campaign = filteredCampaigns[index];
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: ListTile(
-              leading: const Icon(Icons.event, color: Colors.red),
+              leading: const Icon(Icons.event, color: Colors.red), // Changed to red
               title: Text(
-                filteredCampaigns[index]['name']!,
+                campaign['name']!,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
-                '${filteredCampaigns[index]['location']} | ${filteredCampaigns[index]['date']}',
+                '${campaign['location']} | ${campaign['startDate']} to ${campaign['endDate']}',
               ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CampaignDetailPage(
+                      campaignName: campaign['name']!,
+                      organizer: campaign['organizer']!,
+                      timePosted: campaign['timePosted']!,
+                      location: campaign['location']!,
+                      latitude: double.parse(campaign['latitude']!),
+                      longitude: double.parse(campaign['longitude']!),
+                    ),
+                  ),
+                );
+              },
             ),
           );
         },
